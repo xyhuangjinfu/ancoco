@@ -19,4 +19,7 @@ dependencies {
     compile gradleApi()
 
     compile 'com.android.tools.build:gradle:2.3.0'
+
+    implementation 'org.ow2.asm:asm:7.0'
+    implementation 'org.ow2.asm:asm-util:7.0'
 }
