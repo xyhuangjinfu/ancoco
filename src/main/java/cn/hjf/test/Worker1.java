@@ -1,6 +1,6 @@
 package cn.hjf.test;
 
-public class Worker {
+public class Worker1 {
 
 //    public int add(int a, int b) {
 //        if (a > 0) {
@@ -11,11 +11,9 @@ public class Worker {
 //        return a + b;
 //    }
 
-    public static void main(String[] args) {
-        new Worker().foo();
-    }
 
     public void foo() {
+        boolean[] booleans = new boolean[3];
         int a = 2;
         int b = a + 3;
         System.out.println(b);

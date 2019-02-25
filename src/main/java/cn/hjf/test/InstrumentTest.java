@@ -11,18 +11,23 @@ import java.io.*;
 public class InstrumentTest {
 
     public static void main(String[] args) {
-        String path = "I:\\idea_workspace\\ancoco\\out\\production\\classes\\cn\\hjf\\test\\Worker.class";
-        byte[] data = readClass(path);
+        String readPath = "I:\\idea_workspace\\ancoco\\out\\production\\classes\\cn\\hjf\\test\\Worker.class";
+        String writePath = readPath;
+        byte[] data = readClass(readPath);
         ClassReader classReader = new ClassReader(data);
 
 
-        ClassWriter classWriter = new ClassWriter(0);
-        InstrumentClassVisitor instrumentClassVisitor = new InstrumentClassVisitor(classWriter);
-        classReader.accept(instrumentClassVisitor, 0);
-        writeClass(path, classWriter.toByteArray());
+        if (true) {
+            ClassWriter classWriter = new ClassWriter(0);
+            InstrumentClassVisitor instrumentClassVisitor = new InstrumentClassVisitor(classWriter);
+            classReader.accept(instrumentClassVisitor, 0);
+            writeClass(writePath, classWriter.toByteArray());
+        } else {
+            TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, new ASMifier(), new PrintWriter(System.out));
+            classReader.accept(traceClassVisitor, 0);
+        }
 
-//        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, new ASMifier(), new PrintWriter(System.out));
-//        classReader.accept(traceClassVisitor, 0);
+
     }
 
 
