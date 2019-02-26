@@ -37,18 +37,18 @@ public class ClassAnalyser extends ClassNode {
 
 		accept(new ClassInstrumenter(api, classWriter));
 
-		InstrumentTest.writeClass("/Users/huangjinfu/Downloads/HomeActivity1.class", classWriter.toByteArray());
+		InstrumentTest.writeClass("/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Test1.class", classWriter.toByteArray());
 	}
 
 	private void insertProbeForMethod() {
 
 		for (MethodNode methodNode : methods) {
 //			int probeArrayPositionInLocalVariable = (Opcodes.ACC_STATIC & methodNode.access) == 0 ? 1 : 0;
-			int probeArrayPositionInLocalVariable = 0;
-			for (final Type t : Type.getArgumentTypes(methodNode.desc)) {
-				probeArrayPositionInLocalVariable += t.getSize();
-			}
-			probeArrayPositionInLocalVariable += methodNode.maxLocals;
+//			int probeArrayPositionInLocalVariable = 0;
+//			for (final Type t : Type.getArgumentTypes(methodNode.desc)) {
+//				probeArrayPositionInLocalVariable += t.getSize();
+//			}
+			int probeArrayPositionInLocalVariable = methodNode.maxLocals;
 
 			System.out.println("----" + methodNode.name + " , probeArrayPositionInLocalVariable : " + probeArrayPositionInLocalVariable);
 

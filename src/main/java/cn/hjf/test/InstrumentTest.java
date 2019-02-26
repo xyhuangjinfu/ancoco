@@ -13,7 +13,8 @@ import java.io.*;
 public class InstrumentTest {
 
     public static void main(String[] args) {
-        String readPath = "/Users/huangjinfu/Downloads/HomeActivity.class";
+        String readPath = "/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Test1.class";
+//        String readPath = "/Users/huangjinfu/Downloads/HomeActivity.class";
 //        String readPath = "/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Worker1.class";
         String writePath = readPath;
         byte[] data = readClass(readPath);
