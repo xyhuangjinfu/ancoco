@@ -16,6 +16,7 @@ public class ClassAnalyser extends ClassNode {
 	private int mTotalMethodLineCount;
 	private Map<String, Integer> mMethodLineCountMap = new HashMap<>();
 	private int mProbeIndex = 0;
+	private String mFilePath;
 
 	public ClassAnalyser() {
 	}
@@ -37,7 +38,8 @@ public class ClassAnalyser extends ClassNode {
 
 		accept(new ClassInstrumenter(api, classWriter));
 
-		InstrumentTest.writeClass("/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Test1.class", classWriter.toByteArray());
+//		InstrumentTest.writeClass("/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Test1.class", classWriter.toByteArray());
+		InstrumentTest.writeClass(mFilePath, classWriter.toByteArray());
 	}
 
 	private void insertProbeForMethod() {
@@ -57,7 +59,7 @@ public class ClassAnalyser extends ClassNode {
 			getProbeArrayInsnList.add(new IntInsnNode(Opcodes.BIPUSH, mTotalMethodLineCount));
 			getProbeArrayInsnList.add(new MethodInsnNode(
 					Opcodes.INVOKESTATIC,
-					"cn/hjf/ProbeDataStore",
+					"cn/hjf/ancoco/ProbeDataStore",
 					"getProbeArray",
 					"(Ljava/lang/String;I)[Z",
 					false
@@ -110,6 +112,10 @@ public class ClassAnalyser extends ClassNode {
 		}
 
 		System.out.println("mTotalMethodLineCount : " + mTotalMethodLineCount);
+	}
+
+	public void setFilePath(String filePath) {
+		mFilePath = filePath;
 	}
 
 	//	private List<MethodAnalyser> mMethodAnalyserList = new ArrayList<>();

@@ -11,6 +11,7 @@ public class Test1 {
 	private void add(int a, long b) {
 		int c = 10;
 
+
 		int d = a + c;
 
 		System.out.println(b + d);

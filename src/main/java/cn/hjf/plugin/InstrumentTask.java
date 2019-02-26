@@ -1,23 +1,36 @@
 package cn.hjf.plugin;
 
+import cn.hjf.coverage.ClassAnalyser;
 import cn.hjf.coverage.InstrumentClassVisitor;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.util.ASMifier;
-import org.objectweb.asm.util.TraceClassVisitor;
+import org.objectweb.asm.Opcodes;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 public class InstrumentTask extends DefaultTask {
 
-    @TaskAction
-    public void instrument() {
-        System.out.println("----------------instrument---------------");
+	@TaskAction
+	public void instrument() {
+		System.out.println("----------------instrument---------------");
 
+
+
+		//instrument code
+		String path1 = getProject().getBuildDir() + "/intermediates/javac/debug/compileDebugJavaWithJavac/classes";
+
+		instrumentPath(path1);
+
+		//copy code
+		String path = getProject().getBuildDir() + "/intermediates/javac/debug/compileDebugJavaWithJavac/classes/cn/hjf/ancoco";
+		String originPath = "/Users/huangjinfu/Downloads/cn/hjf/ancoco";
+
+		File[] files = new File(originPath).listFiles();
+		for (File file : files) {
+			byte[] bytes = readClass(file.getAbsolutePath());
+			writeClass(path + "/" + file.getName(), bytes);
+		}
 
         try {
 
@@ -36,37 +49,71 @@ public class InstrumentTask extends DefaultTask {
             e.printStackTrace();
         }
 
-    }
-
-    private byte[] readClass(String path) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try {
-            FileInputStream fis = new FileInputStream(path);
-            int readCount = -1;
-            byte[] readBuffer = new byte[1024];
+	}
 
 
-            while (true) {
-                readCount = fis.read(readBuffer);
-                if (readCount == -1) {
-                    break;
-                }
-                bos.write(readBuffer, 0, readCount);
-            }
+	private void instrumentPath(String path) {
+		File file = new File(path);
+		if (file.isDirectory()) {
+			File[] fl = file.listFiles();
+			for(File f : fl) {
+				instrumentPath(f.getAbsolutePath());
+			}
+		} else {
+			if (!path.contains("android")) {
+				byte[] classData = readClass(path);
+				ClassAnalyser classAnalyser = new ClassAnalyser(Opcodes.ASM7);
+				classAnalyser.setFilePath(path);
+				ClassReader classReader = new ClassReader(classData);
+				classReader.accept(classAnalyser, 0);
+			}
+		}
+	}
 
-            fis.close();
+	private byte[] readClass(String path) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-            return bos.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                bos.close();
-            } catch (IOException e) {
-            }
-        }
+		try {
+			FileInputStream fis = new FileInputStream(path);
+			int readCount = -1;
+			byte[] readBuffer = new byte[1024];
 
-        return null;
-    }
+			while (true) {
+				readCount = fis.read(readBuffer);
+				if (readCount == -1) {
+					break;
+				}
+				bos.write(readBuffer, 0, readCount);
+			}
+
+			fis.close();
+
+			return bos.toByteArray();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				bos.close();
+			} catch (IOException e) {
+			}
+		}
+
+		return null;
+	}
+
+	public static void writeClass(String path, byte[] data) {
+		File file = new File(path);
+		if (!file.getParentFile().exists()) {
+			file.getParentFile().mkdirs();
+		}
+
+		try {
+			FileOutputStream fos = new FileOutputStream(path);
+			fos.write(data);
+			fos.flush();
+			fos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
