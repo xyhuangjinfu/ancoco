@@ -11,8 +11,11 @@ public class Worker1 {
 	public void foo() {
 		boolean[] probeArray = ProbeDataStore.getProbeArray("hello", 28);
 		int a = 13;
+		probeArray[0] = true;
 		int b = a * 2;
+		probeArray[1] = true;
 		System.out.println(b);
+		probeArray[2] = true;
 	}
 
 }

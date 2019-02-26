@@ -6,13 +6,16 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ClassAnalyser extends ClassNode {
 
 	private int mTotalMethodLineCount;
 	private Map<String, Integer> mMethodLineCountMap = new HashMap<>();
+	private int mProbeIndex = 0;
 
 	public ClassAnalyser() {
 	}
@@ -40,10 +43,14 @@ public class ClassAnalyser extends ClassNode {
 	private void insertProbeForMethod() {
 
 		for (MethodNode methodNode : methods) {
-			int probeArrayPositionInLocalVariable = (Opcodes.ACC_STATIC & methodNode.access) == 0 ? 1 : 0;
+//			int probeArrayPositionInLocalVariable = (Opcodes.ACC_STATIC & methodNode.access) == 0 ? 1 : 0;
+			int probeArrayPositionInLocalVariable = 0;
 			for (final Type t : Type.getArgumentTypes(methodNode.desc)) {
 				probeArrayPositionInLocalVariable += t.getSize();
 			}
+			probeArrayPositionInLocalVariable += methodNode.maxLocals;
+
+			System.out.println("----" + methodNode.name + " , probeArrayPositionInLocalVariable : " + probeArrayPositionInLocalVariable);
 
 			InsnList getProbeArrayInsnList = new InsnList();
 			getProbeArrayInsnList.add(new LdcInsnNode(name));
@@ -60,13 +67,40 @@ public class ClassAnalyser extends ClassNode {
 			methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), getProbeArrayInsnList);
 
 			methodNode.maxLocals++;
+
+
+			//------
+
+			for (AbstractInsnNode insnNode : methodNode.instructions.toArray()) {
+				if (insnNode instanceof LineNumberNode) {
+					/**
+					 * methodVisitor.visitVarInsn(ALOAD, 1);
+					 methodVisitor.visitInsn(ICONST_0);
+					 methodVisitor.visitInsn(ICONST_1);
+					 methodVisitor.visitInsn(BASTORE);
+					 */
+					InsnList insnList = new InsnList();
+					insnList.add(new VarInsnNode(Opcodes.ALOAD, probeArrayPositionInLocalVariable));
+					insnList.add(new IntInsnNode(Opcodes.BIPUSH, mProbeIndex++));
+					insnList.add(new InsnNode(Opcodes.ICONST_1));
+					insnList.add(new InsnNode(Opcodes.BASTORE));
+
+					methodNode.instructions.insert(insnNode, insnList);
+				}
+			}
+
+			methodNode.maxStack = methodNode.maxStack + 10;
+
+
 		}
 	}
 
 	private void calculateTotalMethodLineCount() {
 		for (MethodNode methodNode : methods) {
 			int methodLineCount = 0;
+			System.out.println("----------------------" + methodNode.name + "---------------------");
 			for (AbstractInsnNode insnNode : methodNode.instructions.toArray()) {
+				System.out.println("    " + insnNode);
 				if (insnNode instanceof LineNumberNode) {
 					methodLineCount++;
 				}
