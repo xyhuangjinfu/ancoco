@@ -95,7 +95,19 @@ public class ClassAnalyser extends ClassNode {
 					 */
 					InsnList insnList = new InsnList();
 					insnList.add(new VarInsnNode(Opcodes.ALOAD, probeArrayPositionInLocalVariable));
-					insnList.add(new IntInsnNode(Opcodes.BIPUSH, mProbeIndex++));
+
+					if (mProbeIndex >= -1 && mProbeIndex <= 5) {
+						insnList.add(new InsnNode(Opcodes.ICONST_0 + mProbeIndex));
+					} else if (mProbeIndex >= Byte.MIN_VALUE && mProbeIndex <= Byte.MAX_VALUE) {
+						insnList.add(new IntInsnNode(Opcodes.BIPUSH, mProbeIndex));
+					} else if (mProbeIndex >= Short.MIN_VALUE && mProbeIndex <= Short.MAX_VALUE) {
+						insnList.add(new IntInsnNode(Opcodes.SIPUSH, mProbeIndex));
+					} else {
+						insnList.add(new LdcInsnNode(Integer.valueOf(mProbeIndex)));
+					}
+
+					mProbeIndex++;
+
 					insnList.add(new InsnNode(Opcodes.ICONST_1));
 					insnList.add(new InsnNode(Opcodes.BASTORE));
 
