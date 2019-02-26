@@ -59,7 +59,17 @@ public class ClassAnalyser extends ClassNode {
 
 			InsnList getProbeArrayInsnList = new InsnList();
 			getProbeArrayInsnList.add(new LdcInsnNode(name));
-			getProbeArrayInsnList.add(new IntInsnNode(Opcodes.BIPUSH, mTotalMethodLineCount));
+
+			if (mTotalMethodLineCount >= -1 && mTotalMethodLineCount <= 5) {
+				getProbeArrayInsnList.add(new InsnNode(Opcodes.ICONST_0 + mTotalMethodLineCount));
+			} else if (mTotalMethodLineCount >= Byte.MIN_VALUE && mTotalMethodLineCount <= Byte.MAX_VALUE) {
+				getProbeArrayInsnList.add(new IntInsnNode(Opcodes.BIPUSH, mTotalMethodLineCount));
+			} else if (mTotalMethodLineCount >= Short.MIN_VALUE && mTotalMethodLineCount <= Short.MAX_VALUE) {
+				getProbeArrayInsnList.add(new IntInsnNode(Opcodes.SIPUSH, mTotalMethodLineCount));
+			} else {
+				getProbeArrayInsnList.add(new LdcInsnNode(Integer.valueOf(mTotalMethodLineCount)));
+			}
+
 			getProbeArrayInsnList.add(new MethodInsnNode(
 					Opcodes.INVOKESTATIC,
 					"cn/hjf/ancoco/ProbeDataStore",

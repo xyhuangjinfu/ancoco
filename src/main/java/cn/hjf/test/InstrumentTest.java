@@ -13,7 +13,8 @@ import java.io.*;
 public class InstrumentTest {
 
     public static void main(String[] args) {
-        String readPath = "/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Test1.class";
+        String readPath = "/Users/huangjinfu/work/project/shanbay-words-android/app/build/intermediates/classes/debug/com/shanbay/words/startup/SplashActivity.class";
+//        String readPath = "/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Test1.class";
 //        String readPath = "/Users/huangjinfu/Downloads/HomeActivity.class";
 //        String readPath = "/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Worker1.class";
         String writePath = readPath;
@@ -25,6 +26,7 @@ public class InstrumentTest {
 //            ClassWriter classWriter = new ClassWriter(0);
 
             ClassAnalyser classAnalyser = new ClassAnalyser(Opcodes.ASM7);
+            classAnalyser.setFilePath("/Users/huangjinfu/work/project/shanbay-words-android/app/build/intermediates/classes/debug/com/shanbay/words/startup/SplashActivity1.class");
 
             classReader.accept(classAnalyser, 0);
 
