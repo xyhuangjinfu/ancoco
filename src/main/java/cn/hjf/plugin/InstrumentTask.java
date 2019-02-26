@@ -15,15 +15,15 @@ public class InstrumentTask extends DefaultTask {
 	public void instrument() {
 		System.out.println("----------------instrument---------------");
 
-
+//		String classFileDir = getProject().getBuildDir() + "/intermediates/javac/debug/compileDebugJavaWithJavac/classes";
+		String classFileDir = getProject().getBuildDir() + "/intermediates/classes/debug";
 
 		//instrument code
-		String path1 = getProject().getBuildDir() + "/intermediates/javac/debug/compileDebugJavaWithJavac/classes";
-
-		instrumentPath(path1);
+		System.out.println("------instrument code------------ : " + classFileDir);
+		instrumentPath(classFileDir);
 
 		//copy code
-		String path = getProject().getBuildDir() + "/intermediates/javac/debug/compileDebugJavaWithJavac/classes/cn/hjf/ancoco";
+		String path = classFileDir + "/cn/hjf/ancoco";
 		String originPath = "/Users/huangjinfu/Downloads/cn/hjf/ancoco";
 
 		File[] files = new File(originPath).listFiles();
@@ -32,22 +32,24 @@ public class InstrumentTask extends DefaultTask {
 			writeClass(path + "/" + file.getName(), bytes);
 		}
 
-        try {
+		System.out.println("------copy------------");
 
-            String testClassPath = "I:\\as_workspace\\MyPluginTest\\app\\build\\intermediates\\classes\\debug\\cn\\hjf\\myplugintest\\MainActivity.class";
-
-            byte[] classData = readClass(testClassPath);
-
-            ClassReader classReader = new ClassReader(classData);
-            InstrumentClassVisitor instrumentClassVisitor = new InstrumentClassVisitor(null);
-            classReader.accept(instrumentClassVisitor, 0);
-
-//            TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, new ASMifier(), new PrintWriter(System.out));
-//            classReader.accept(traceClassVisitor, 0);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//
+//            String testClassPath = "I:\\as_workspace\\MyPluginTest\\app\\build\\intermediates\\classes\\debug\\cn\\hjf\\myplugintest\\MainActivity.class";
+//
+//            byte[] classData = readClass(testClassPath);
+//
+//            ClassReader classReader = new ClassReader(classData);
+//            InstrumentClassVisitor instrumentClassVisitor = new InstrumentClassVisitor(null);
+//            classReader.accept(instrumentClassVisitor, 0);
+//
+////            TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, new ASMifier(), new PrintWriter(System.out));
+////            classReader.accept(traceClassVisitor, 0);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 	}
 
@@ -60,13 +62,13 @@ public class InstrumentTask extends DefaultTask {
 				instrumentPath(f.getAbsolutePath());
 			}
 		} else {
-			if (!path.contains("android")) {
+//			if (!path.contains("android")) {
 				byte[] classData = readClass(path);
 				ClassAnalyser classAnalyser = new ClassAnalyser(Opcodes.ASM7);
 				classAnalyser.setFilePath(path);
 				ClassReader classReader = new ClassReader(classData);
 				classReader.accept(classAnalyser, 0);
-			}
+//			}
 		}
 	}
 

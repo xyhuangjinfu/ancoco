@@ -3,12 +3,9 @@ package cn.hjf.coverage;
 import cn.hjf.test.InstrumentTest;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ClassAnalyser extends ClassNode {
@@ -33,13 +30,14 @@ public class ClassAnalyser extends ClassNode {
 
 		insertProbeForMethod();
 
-
 		ClassWriter classWriter = new ClassWriter(0);
 
 		accept(new ClassInstrumenter(api, classWriter));
 
 //		InstrumentTest.writeClass("/Users/huangjinfu/study/idea-workspace/ancoco/out/production/classes/cn/hjf/test/Test1.class", classWriter.toByteArray());
 		InstrumentTest.writeClass(mFilePath, classWriter.toByteArray());
+		System.out.println("write class : " + mFilePath);
+
 	}
 
 	private void insertProbeForMethod() {
@@ -50,6 +48,11 @@ public class ClassAnalyser extends ClassNode {
 //			for (final Type t : Type.getArgumentTypes(methodNode.desc)) {
 //				probeArrayPositionInLocalVariable += t.getSize();
 //			}
+
+			if (methodNode.instructions.size() == 0) {
+				continue;
+			}
+
 			int probeArrayPositionInLocalVariable = methodNode.maxLocals;
 
 			System.out.println("----" + methodNode.name + " , probeArrayPositionInLocalVariable : " + probeArrayPositionInLocalVariable);
@@ -69,7 +72,6 @@ public class ClassAnalyser extends ClassNode {
 			methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), getProbeArrayInsnList);
 
 			methodNode.maxLocals++;
-
 
 			//------
 
@@ -92,7 +94,6 @@ public class ClassAnalyser extends ClassNode {
 			}
 
 			methodNode.maxStack = methodNode.maxStack + 10;
-
 
 		}
 	}
