@@ -12,9 +12,13 @@ public class AncocoPlugin implements Plugin<Project> {
             public void doCall() {
                 Task transformClassesWithDexBuilderForDebug = project.getTasks().findByName("transformClassesWithDexBuilderForDebug");
 
-                InstrumentTask instrumentTask = project.getTasks().create("ancocoInstrument", InstrumentTask.class);
+//                InstrumentTask instrumentTask = project.getTasks().create("ancocoInstrument", InstrumentTask.class);
+//
+//                transformClassesWithDexBuilderForDebug.dependsOn(instrumentTask);
 
-                transformClassesWithDexBuilderForDebug.dependsOn(instrumentTask);
+                Task compileDebugAidl = project.getTasks().findByName("compileDebugAidl");
+                ManifestTask manifestTask = project.getTasks().create("manifestInstrument", ManifestTask.class);
+                compileDebugAidl.dependsOn(manifestTask);
             }
         });
     }
