@@ -1,5 +1,7 @@
 package cn.hjf.plugin;
 
+import com.android.build.gradle.AppExtension;
+import com.android.build.gradle.api.ApplicationVariant;
 import com.android.build.gradle.tasks.factory.AndroidJavaCompile;
 import groovy.lang.Closure;
 import org.gradle.api.Plugin;
@@ -9,6 +11,7 @@ import org.gradle.api.Task;
 public class AncocoPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
+		System.out.println("--------------- AncocoPlugin------------");
         project.afterEvaluate(new Closure(this) {
             public void doCall() {
 //                Task transformClassesWithDexBuilderForDebug = project.getTasks().findByName("transformClassesWithDexBuilderForDebug");
@@ -21,13 +24,19 @@ public class AncocoPlugin implements Plugin<Project> {
 //                ManifestTask manifestTask = project.getTasks().create("manifestInstrument", ManifestTask.class);
 //                compileDebugAidl.dependsOn(manifestTask);
 
-				Task compileDebugJavaWithJavac = project.getTasks().findByName("compileDebugJavaWithJavac");
-				AndroidJavaCompile androidJavaCompile = (AndroidJavaCompile) compileDebugJavaWithJavac;
-				System.out.println("--- " + androidJavaCompile.getDestinationDir().getAbsolutePath());
+//				Task compileDebugJavaWithJavac = project.getTasks().findByName("compileDebugJavaWithJavac");
+//				AndroidJavaCompile androidJavaCompile = (AndroidJavaCompile) compileDebugJavaWithJavac;
+//				System.out.println("--- " + androidJavaCompile.getDestinationDir().getAbsolutePath());
+//
+//				System.out.println("-----------------------------------------------");
+//				for (Task t : project.getTasks()) {
+//					System.out.println("    " + t.getName() + " , " + t.getDescription());
+//				}
 
-				System.out.println("-----------------------------------------------");
-				for (Task t : project.getTasks()) {
-					System.out.println("    " + t.getName() + " , " + t.getDescription());
+
+				AppExtension appExtension = project.getExtensions().findByType(AppExtension.class);
+				for (ApplicationVariant applicationVariant : appExtension.getApplicationVariants()) {
+					System.out.println(applicationVariant.getName());
 				}
             }
         });
