@@ -14,6 +14,7 @@ public class MethodInstrumenter extends MethodNode {
     private MethodVisitor mMethodVisitor;
     private MethodAnalyzer mMethodAnalyzer;
     private int mProbeIndex;
+    private int mTotalLineCount;
 
     public MethodInstrumenter() {
     }
@@ -32,10 +33,6 @@ public class MethodInstrumenter extends MethodNode {
 
     @Override
     public void visitEnd() {
-        if (!"handleUserFail".equals(name)) {
-            return;
-        }
-
         //no instruction
         if (instructions.size() == 0) {
             return;
@@ -97,6 +94,14 @@ public class MethodInstrumenter extends MethodNode {
         mClassNode = classNode;
     }
 
+    public void setTotalLineCount(int totalLineCount) {
+        mTotalLineCount = totalLineCount;
+    }
+
+    public void setProbeIndex(int probeIndex) {
+        mProbeIndex = probeIndex;
+    }
+
     /**
      * ***************************************************************************************************************
      * <p>
@@ -106,7 +111,7 @@ public class MethodInstrumenter extends MethodNode {
     private InsnList createGetProbesInsnList() {
         InsnList insnList = new InsnList();
         insnList.add(new LdcInsnNode(mClassNode.name));
-        insnList.add(IntInsnUtil.getPushInsnNode(mMethodAnalyzer.getTotalLineCount()));
+        insnList.add(IntInsnUtil.getPushInsnNode(mTotalLineCount));
         insnList.add(new MethodInsnNode(
                 Opcodes.INVOKESTATIC,
                 "cn/hjf/ancoco/ProbeDataStore",

@@ -12,7 +12,7 @@ public class MethodAnalyzer extends MethodNode {
 
     private MethodVisitor mMethodVisitor;
     private ClassNode mOwner;
-    private int mTotalLineCount;
+    private int mLineCount;
     private LinkedList<Integer> mBranchLineList = new LinkedList<>();
 
     public MethodAnalyzer() {
@@ -30,13 +30,11 @@ public class MethodAnalyzer extends MethodNode {
         super(api, access, name, descriptor, signature, exceptions);
     }
 
-
     /**
      * ***************************************************************************************************************
      * //
      * ***************************************************************************************************************
      */
-
 
     public void setMethodVisitor(MethodVisitor methodVisitor) {
         mMethodVisitor = methodVisitor;
@@ -46,8 +44,8 @@ public class MethodAnalyzer extends MethodNode {
         mOwner = owner;
     }
 
-    public int getTotalLineCount() {
-        return mTotalLineCount;
+    public int getLineCount() {
+        return mLineCount;
     }
 
     public LinkedList<Integer> getBranchLineList() {
@@ -68,7 +66,7 @@ public class MethodAnalyzer extends MethodNode {
         //calculate total line count
         for (AbstractInsnNode insnNode : insnNodeArray) {
             if (insnNode instanceof LineNumberNode) {
-                mTotalLineCount++;
+                mLineCount++;
             }
         }
 
@@ -111,7 +109,5 @@ public class MethodAnalyzer extends MethodNode {
 
         accept(mMethodVisitor);
     }
-
-
 
 }
