@@ -1,5 +1,6 @@
 package cn.hjf.cc;
 
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 public class MethodAnalyzer extends MethodNode {
 
+    private MethodVisitor mMethodVisitor;
     private ClassNode mOwner;
     private int mTotalLineCount;
     private LinkedList<Integer> mBranchLineList = new LinkedList<>();
@@ -28,11 +30,17 @@ public class MethodAnalyzer extends MethodNode {
         super(api, access, name, descriptor, signature, exceptions);
     }
 
+
     /**
      * ***************************************************************************************************************
      * //
      * ***************************************************************************************************************
      */
+
+
+    public void setMethodVisitor(MethodVisitor methodVisitor) {
+        mMethodVisitor = methodVisitor;
+    }
 
     public void setOwner(ClassNode owner) {
         mOwner = owner;
@@ -100,5 +108,10 @@ public class MethodAnalyzer extends MethodNode {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        accept(mMethodVisitor);
     }
+
+
+
 }
