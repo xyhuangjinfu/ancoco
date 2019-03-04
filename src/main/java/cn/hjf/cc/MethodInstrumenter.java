@@ -33,6 +33,10 @@ public class MethodInstrumenter extends MethodNode {
 
     @Override
     public void visitEnd() {
+//        if (!"onUserOffline".equals(name)) {
+//            return;
+//        }
+
         //no instruction
         if (instructions.size() == 0) {
             return;
@@ -72,6 +76,24 @@ public class MethodInstrumenter extends MethodNode {
 
         //change stack
         maxStack = maxStack + 3;
+
+        System.out.println("---instrumented--");
+        for (AbstractInsnNode node : instructions.toArray()) {
+            if (node instanceof LineNumberNode) {
+                System.out.print(((LineNumberNode) node).line);
+                System.out.print(" - ");
+                System.out.print(node);
+                System.out.println();
+            } else if (node instanceof JumpInsnNode) {
+                System.out.print(node);
+                System.out.print(" , ");
+                System.out.print(((JumpInsnNode) node).label);
+                System.out.println();
+            } else {
+                System.out.print(node);
+                System.out.println();
+            }
+        }
 
         accept(mMethodVisitor);
     }
@@ -145,17 +167,31 @@ public class MethodInstrumenter extends MethodNode {
                 AbstractInsnNode insertNode = null;
                 for (int j = i + 1; j < insnNodeArray.length; j++) {
                     AbstractInsnNode insn = insnNodeArray[j];
-                    if ((insn instanceof LabelNode)
+                    if (isNotLastLabelInsn(insn)
                             || isUnConditionJump(insn)
-                            || isReturnInsn(insn)) {
+//                            || isReturnInsn(insn)
+                            ) {
                         insertNode = insn.getPrevious();
                         break;
                     }
                 }
-                list.add(insertNode);
+                if (insertNode != null) {
+                    list.add(insertNode);
+                }
             }
         }
         return list;
+    }
+
+    private boolean isNotLastLabelInsn(AbstractInsnNode abstractInsnNode) {
+        if (abstractInsnNode instanceof LabelNode) {
+            LabelNode labelNode = (LabelNode) abstractInsnNode;
+            System.out.println("    xxx    --   " + labelNode.getNext());
+            if (labelNode.getNext() != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isReturnInsn(AbstractInsnNode abstractInsnNode) {
