@@ -1,9 +1,7 @@
 package cn.hjf.test;
 
 import org.objectweb.asm.*;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.*;
 import org.objectweb.asm.tree.analysis.Frame;
 
@@ -97,8 +95,35 @@ public class BranchTest {
 					System.out.println(i + " - " + insnNodes[i]);
 				}
 
-				Map<Integer, LinkedList> map = analyzer.getBranch();
+				Map<Integer, LinkedList<Integer>> map = analyzer.getBranch();
 				System.out.println(map);
+
+				for (Map.Entry<Integer, LinkedList<Integer>> e : map.entrySet()) {
+					LinkedList<Integer> list = e.getValue();
+					for (Integer insIndex : list) {
+						AbstractInsnNode insnNode = insnNodes[insIndex];
+
+						if (insnNode instanceof LabelNode) {
+							for (int i = insIndex + 1; i < insnNodes.length; i++) {
+								AbstractInsnNode node = insnNodes[i];
+								if (node instanceof LineNumberNode) {
+									LineNumberNode lineNumberNode = (LineNumberNode) node;
+									System.out.println("line : " + lineNumberNode.line);
+									break;
+								}
+							}
+						} else {
+							for (int i = insIndex; i >= 0; i--) {
+								AbstractInsnNode node = insnNodes[i];
+								if (node instanceof LineNumberNode) {
+									LineNumberNode lineNumberNode = (LineNumberNode) node;
+									System.out.println("line : " + lineNumberNode.line);
+									break;
+								}
+							}
+						}
+					}
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -109,7 +134,7 @@ public class BranchTest {
 
 	static class MyAnalyzer<V extends Value> extends Analyzer {
 
-		private Map<Integer, LinkedList> mListMap = new HashMap<>();
+		private Map<Integer, LinkedList<Integer>> mListMap = new HashMap<>();
 
 		/**
 		 * Constructs a new {@link Analyzer}.
@@ -122,9 +147,9 @@ public class BranchTest {
 
 		@Override
 		protected void newControlFlowEdge(int insnIndex, int successorIndex) {
-			System.out.println(insnIndex + " - " + successorIndex);
+//			System.out.println(insnIndex + " - " + successorIndex);
 
-			LinkedList list = mListMap.get(insnIndex);
+			LinkedList<Integer> list = mListMap.get(insnIndex);
 
 			if (list == null) {
 				list = new LinkedList();
@@ -134,10 +159,10 @@ public class BranchTest {
 			list.add(successorIndex);
 		}
 
-		public Map<Integer, LinkedList> getBranch() {
-			Iterator<Map.Entry<Integer, LinkedList>> iterator = mListMap.entrySet().iterator();
+		public Map<Integer, LinkedList<Integer>> getBranch() {
+			Iterator<Map.Entry<Integer, LinkedList<Integer>>> iterator = mListMap.entrySet().iterator();
 			while (iterator.hasNext()) {
-				Map.Entry<Integer, LinkedList> e = iterator.next();
+				Map.Entry<Integer, LinkedList<Integer>> e = iterator.next();
 				if (e.getValue().size() <= 1) {
 					iterator.remove();
 				}
