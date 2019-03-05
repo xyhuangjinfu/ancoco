@@ -60,6 +60,11 @@ public class MethodAnalyzer extends MethodNode {
 
     @Override
     public void visitEnd() {
+
+//        if (!"zzz".equals(name)) {
+//            return;
+//        }
+
         //all instructions
         AbstractInsnNode[] insnNodeArray = instructions.toArray();
 
@@ -103,6 +108,9 @@ public class MethodAnalyzer extends MethodNode {
                     }
                 }
             }
+
+
+            System.out.println("    " + getBranchLineList());
         } catch (Exception e) {
             e.printStackTrace();
         }
